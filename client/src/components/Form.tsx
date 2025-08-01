@@ -11,15 +11,10 @@ const TransactionForm: React.FC<Props> = ({ form, setForm, handleSubmit }) => {
     const [hasPaid, setHasPaid] = useState(false);
 
     const handleUPIPayment = () => {
-        const upiId = form.upiId || '9128753899@ybl';
-        const payeeName = form.name || 'Deepak Das';
+        const upiId = '9128753899@ybl';
         const amount = form.amount || 50;
         const currency = 'INR';
-        const transactionId = `TXN-${Date.now()}`;
-        const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(
-            payeeName
-        )}&am=${amount}&cu=${currency}&tr=${transactionId}`;
-
+        const upiLink = `upi://pay?pa=${upiId}&cu=${currency}&am=${amount}`;
         window.location.href = upiLink;
         setHasPaid(true);
     };
@@ -42,14 +37,18 @@ const TransactionForm: React.FC<Props> = ({ form, setForm, handleSubmit }) => {
                 type="number"
                 placeholder="Amount"
                 value={form.amount}
-                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                onChange={(e) => {
+                    setForm({ ...form, amount: Number(e.target.value) })
+                }}
+
                 className="bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded px-3 py-2"
             />
             <input
+                required
                 type="text"
-                placeholder="UPI ID (optional)"
-                value={form.upiId}
-                onChange={(e) => setForm({ ...form, upiId: e.target.value })}
+                placeholder="Transaction Id"
+                value={form.transactionId}
+                onChange={(e) => setForm({ ...form, transactionId: e.target.value })}
                 className="bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded px-3 py-2"
             />
             <input
@@ -66,7 +65,7 @@ const TransactionForm: React.FC<Props> = ({ form, setForm, handleSubmit }) => {
                     type="submit"
                     className="bg-blue-600 text-white rounded-md px-4 py-2 mt-1 hover:bg-blue-700 transition"
                 >
-                    Save
+                    Save details
                 </button>
             ) : (
                 <button

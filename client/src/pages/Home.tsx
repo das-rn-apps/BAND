@@ -14,6 +14,7 @@ import TransactionCard from '../components/Card';
 import TransactionFilter from '../components/Filter';
 import TransactionForm from '../components/Form';
 import TransactionSummary from '../components/Summary';
+import Spinner from '../components/Spinner';
 
 const Home: React.FC = () => {
     const {
@@ -22,14 +23,16 @@ const Home: React.FC = () => {
         filterByDateRange,
         resetFilter,
         addTransaction,
+        loading,
     } = useTransactionStore();
 
     const [form, setForm] = useState<TransanctionFormData>({
         name: '',
-        amount: '',
-        upiId: '',
+        amount: 0,
+        transactionId: '',
         mode: 'UPI',
         purpose: '',
+        type: "Credit"
     });
 
     const [showForm, setShowForm] = useState(false);
@@ -46,31 +49,41 @@ const Home: React.FC = () => {
             ...form,
             amount: +form.amount,
             mode: form.mode as 'UPI' | 'Cash' | 'Card',
+            type: form.type,
+            transactionId: form.transactionId
         });
-        setForm({ name: '', amount: '', upiId: '', mode: 'UPI', purpose: '' });
+        setForm({ name: '', amount: 0, transactionId: '', mode: 'UPI', purpose: '', type: "Credit" });
         setShowForm(false);
     };
 
     const handleFilter = async () => {
-        if (startDate && endDate) {
-            await filterByDateRange(startDate, endDate);
-        } else {
+        if (!startDate || !endDate) {
             resetFilter();
+            return;
         }
+        const from = new Date(startDate);
+        const to = new Date(endDate);
+
+        if (from > to) {
+            alert("Start date must be before end date.");
+            return;
+        }
+        await filterByDateRange(startDate, endDate);
     };
+
 
     const downloadPDF = () => {
         const doc = new jsPDF();
         doc.setFontSize(16);
-        doc.text('📄 BAND Fund Transaction Report', 14, 20);
+        doc.text('BAND Fund Transaction Report', 14, 20);
         autoTable(doc, {
             startY: 30,
-            head: [['Name', 'Amount (₹)', 'Mode', 'UPI', 'Purpose', 'Date']],
+            head: [['Name', 'Amount(in Rs)', 'Mode', 'Transaction Id', 'Purpose', 'Date']],
             body: filteredTransactions.map(tx => [
                 tx.name,
                 tx.amount,
                 tx.mode,
-                tx.upiId || '-',
+                tx.transactionId || '-',
                 tx.purpose || '-',
                 new Date(tx.createdAt!).toLocaleString(),
             ]),
@@ -137,8 +150,8 @@ const Home: React.FC = () => {
 
             {/* Transaction List */}
             <div className="grid gap-2">
-                {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map(tx => (
+                {loading ? <Spinner message='Please wait until we prepare data for you' /> : filteredTransactions.length > 0 ? (
+                    filteredTransactions.map((tx) => (
                         <TransactionCard key={tx._id} {...tx} />
                     ))
                 ) : (

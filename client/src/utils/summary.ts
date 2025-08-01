@@ -1,15 +1,25 @@
 export const calculateSummary = (transactions: any[]) => {
   const monthly: Record<string, number> = {};
   const yearly: Record<string, number> = {};
+  let total = 0;
 
-  transactions.forEach(tx => {
+  transactions.forEach((tx) => {
+    if (!tx?.createdAt || typeof tx.amount !== "number") return;
+
     const date = new Date(tx.createdAt);
-    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-    const yearKey = `${date.getFullYear()}`;
 
-    monthly[monthKey] = (monthly[monthKey] || 0) + tx.amount;
-    yearly[yearKey] = (yearly[yearKey] || 0) + tx.amount;
+    const monthKey = date.toLocaleString("en-IN", {
+      month: "long",
+      year: "numeric",
+    });
+
+    const yearKey = `${date.getFullYear()}`;
+    const signedAmount = tx.type === "Credit" ? tx.amount : -tx.amount;
+
+    monthly[monthKey] = (monthly[monthKey] || 0) + signedAmount;
+    yearly[yearKey] = (yearly[yearKey] || 0) + signedAmount;
+    total += signedAmount;
   });
 
-  return { monthly, yearly };
+  return { monthly, yearly, total };
 };
