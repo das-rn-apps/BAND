@@ -32,7 +32,8 @@ const Home: React.FC = () => {
         transactionId: '',
         mode: 'UPI',
         purpose: '',
-        type: "Credit"
+        type: "Credit",
+        isVerified: false
     });
 
     const [showForm, setShowForm] = useState(false);
@@ -50,9 +51,10 @@ const Home: React.FC = () => {
             amount: +form.amount,
             mode: form.mode as 'UPI' | 'Cash' | 'Card',
             type: form.type,
-            transactionId: form.transactionId
+            transactionId: form.transactionId,
+            isVerified: false
         });
-        setForm({ name: '', amount: 0, transactionId: '', mode: 'UPI', purpose: '', type: "Credit" });
+        setForm({ name: '', amount: 0, transactionId: '', mode: 'UPI', purpose: '', type: "Credit", isVerified: false });
         setShowForm(false);
     };
 
@@ -78,14 +80,15 @@ const Home: React.FC = () => {
         doc.text('BAND Fund Transaction Report', 14, 20);
         autoTable(doc, {
             startY: 30,
-            head: [['Name', 'Amount(in Rs)', 'Mode', 'Transaction Id', 'Purpose', 'Date']],
+            head: [['Transaction Id', 'Name', 'Amount(in Rs)', 'Date', "Type", 'Purpose', 'Verified']],
             body: filteredTransactions.map(tx => [
+                tx.transactionId || '-',
                 tx.name,
                 tx.amount,
-                tx.mode,
-                tx.transactionId || '-',
-                tx.purpose || '-',
                 new Date(tx.createdAt!).toLocaleString(),
+                tx.type,
+                tx.purpose || '-',
+                tx.isVerified ? "Yes" : "No",
             ]),
         });
         doc.save('Transactions_Report.pdf');

@@ -4,16 +4,22 @@ export const calculateSummary = (transactions: any[]) => {
   let total = 0;
 
   transactions.forEach((tx) => {
-    if (!tx?.createdAt || typeof tx.amount !== "number") return;
+    // Skip if missing required fields or not verified
+    if (
+      !tx?.createdAt ||
+      typeof tx.amount !== "number" ||
+      tx.isVerified !== true
+    ) {
+      return;
+    }
 
     const date = new Date(tx.createdAt);
-
     const monthKey = date.toLocaleString("en-IN", {
       month: "long",
       year: "numeric",
     });
-
     const yearKey = `${date.getFullYear()}`;
+
     const signedAmount = tx.type === "Credit" ? tx.amount : -tx.amount;
 
     monthly[monthKey] = (monthly[monthKey] || 0) + signedAmount;

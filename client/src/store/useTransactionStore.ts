@@ -1,28 +1,19 @@
 import { create } from "zustand";
 import axios from "axios";
+import type { TransanctionFormData } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-interface Transaction {
-  _id?: string;
-  name: string;
-  amount: number;
-  transactionId: string;
-  mode: "UPI" | "Cash" | "Card";
-  purpose?: string;
-  createdAt?: string;
-  type: string;
-}
-
 interface State {
-  allTransactions: Transaction[];
-  filteredTransactions: Transaction[];
+  allTransactions: TransanctionFormData[];
+  filteredTransactions: TransanctionFormData[];
   loading: boolean;
 
   fetchAllTransactions: () => Promise<void>;
   filterByDateRange: (start: string, end: string) => void;
   resetFilter: () => void;
-  addTransaction: (tx: Transaction) => Promise<void>;
+  addTransaction: (tx: TransanctionFormData) => Promise<void>;
+  verifyTransaction: (id: string, isVerified: boolean) => Promise<void>;
 }
 
 export const useTransactionStore = create<State>((set, get) => ({
@@ -82,6 +73,29 @@ export const useTransactionStore = create<State>((set, get) => ({
       await get().fetchAllTransactions();
     } catch (error) {
       console.error("Failed to add transaction", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  verifyTransaction: async (id: string, isVerified: boolean) => {
+    set({ loading: true });
+    try {
+      await axios.patch(`${API_BASE_URL}/api/transactions/${id}/verify`, {
+        isVerified,
+      });
+
+      // Update local state
+      const { allTransactions, filteredTransactions } = get();
+      const updateList = (list: TransanctionFormData[]) =>
+        list.map((tx) => (tx._id === id ? { ...tx, isVerified } : tx));
+
+      set({
+        allTransactions: updateList(allTransactions),
+        filteredTransactions: updateList(filteredTransactions),
+      });
+    } catch (error) {
+      console.error("Failed to update verification status", error);
     } finally {
       set({ loading: false });
     }

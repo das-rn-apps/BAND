@@ -43,14 +43,17 @@ const TransactionForm: React.FC<Props> = ({ form, setForm, handleSubmit }) => {
 
                 className="bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded px-3 py-2"
             />
-            <input
-                required
-                type="text"
-                placeholder="Transaction Id"
-                value={form.transactionId}
-                onChange={(e) => setForm({ ...form, transactionId: e.target.value })}
-                className="bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded px-3 py-2"
-            />
+            {
+                hasPaid &&
+                <input
+                    required
+                    type="text"
+                    placeholder="Transaction Id"
+                    value={form.transactionId}
+                    onChange={(e) => setForm({ ...form, transactionId: e.target.value })}
+                    className="bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded px-3 py-2"
+                />
+            }
             <input
                 type="text"
                 placeholder="Purpose (optional)"

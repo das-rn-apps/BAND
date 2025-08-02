@@ -5,6 +5,7 @@ const transactionSchema = new mongoose.Schema(
     name: { type: String, required: true },
     amount: { type: Number, required: true },
     transactionId: { type: String, required: true },
+    isVerified: { type: Boolean, required: true, default: false },
     mode: { type: String, enum: ["UPI", "Cash", "Card"], required: true },
     type: {
       type: String,

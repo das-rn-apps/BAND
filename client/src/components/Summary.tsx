@@ -76,7 +76,7 @@ const TransactionSummary: React.FC = () => {
             <div className="flex-1 bg-gradient-to-br from-green-800 to-green-500 py-3 px-2 rounded-lg shadow-md hover:shadow-lg transition text-center">
                 <h2 className="text-sm font-bold mb-3 text-white flex justify-center items-center gap-2">
                     <ChartBarIcon className="w-5 h-5 text-pink-300" />
-                    All Time Total
+                    Total
                 </h2>
                 {loading ? (
                     <Spinner />
