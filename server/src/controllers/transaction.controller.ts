@@ -18,7 +18,7 @@ export const createTransaction = async (req: Request, res: Response) => {
 
 export const getTransactions = async (req: Request, res: Response) => {
   try {
-    const transactions = await Transaction.find({});
+    const transactions = await Transaction.find({}).sort({ createdAt: -1 });
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch transactions" });

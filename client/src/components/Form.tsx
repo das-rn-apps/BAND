@@ -11,13 +11,21 @@ const TransactionForm: React.FC<Props> = ({ form, setForm, handleSubmit }) => {
     const [hasPaid, setHasPaid] = useState(false);
 
     const handleUPIPayment = () => {
-        const upiId = '9128753899@ybl';
+        const upiId = '9128753899@ybl'; // Your UPI ID
+        const name = 'Deepak Das'; // Your name
         const amount = form.amount || 50;
         const currency = 'INR';
-        const upiLink = `upi://pay?pa=${upiId}&cu=${currency}&am=${amount}`;
+        const note = form.purpose || 'Donation for Band Fund';
+        const transactionRef = `TXN${Date.now()}`; // Unique transaction ref
+
+        const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&tn=${encodeURIComponent(note)}&am=${amount}&cu=${currency}&tr=${transactionRef}`;
+
+        window.alert("You will be redirected to your UPI app. After payment, come back here and enter the Transaction ID.");
         window.location.href = upiLink;
+
         setHasPaid(true);
     };
+
 
     return (
         <form
