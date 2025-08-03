@@ -28,14 +28,14 @@ const Home: React.FC = () => {
 
     const [form, setForm] = useState<TransanctionFormData>({
         name: '',
-        amount: 0,
+        amount: undefined as unknown as number,
         transactionId: '',
         mode: 'UPI',
         purpose: '',
         type: "Credit",
         isVerified: false
     });
-
+    console.log(form)
     const [showForm, setShowForm] = useState(false);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -48,13 +48,13 @@ const Home: React.FC = () => {
         e.preventDefault();
         await addTransaction({
             ...form,
-            amount: +form.amount,
+            amount: form.amount,
             mode: form.mode as 'UPI' | 'Cash' | 'Card',
             type: form.type,
             transactionId: form.transactionId,
             isVerified: false
         });
-        setForm({ name: '', amount: 0, transactionId: '', mode: 'UPI', purpose: '', type: "Credit", isVerified: false });
+        setForm({ name: '', amount: undefined as unknown as number, transactionId: '', mode: 'UPI', purpose: '', type: "Credit", isVerified: false });
         setShowForm(false);
     };
 
