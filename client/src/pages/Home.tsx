@@ -24,6 +24,7 @@ const Home: React.FC = () => {
         resetFilter,
         addTransaction,
         loading,
+        error,
     } = useTransactionStore();
 
     const [form, setForm] = useState<TransanctionFormData>({
@@ -125,12 +126,14 @@ const Home: React.FC = () => {
 
             {/* Transaction Form */}
             {showForm && (
-                <TransactionForm
-                    form={form}
-                    setForm={setForm}
-                    handleSubmit={handleSubmit}
-                />
+                <>
+                    <TransactionForm form={form} setForm={setForm} handleSubmit={handleSubmit} />
+                    {error && (
+                        <p className="text-sm text-red-400 mt-2 text-center">{error}</p>
+                    )}
+                </>
             )}
+
 
             {/* Summary Section */}
             <TransactionSummary />
